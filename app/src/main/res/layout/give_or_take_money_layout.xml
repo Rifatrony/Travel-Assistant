@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="310dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+    <EditText
+        android:id="@+id/nameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Name"
+        android:textSize="14sp"
+        android:textColor="@color/blue"
+        android:textStyle="bold"
+        android:padding="14dp"
+        android:background="@drawable/edittext_background"
+        android:elevation="6dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="10dp"
+        />
+
+
+    <EditText
+        android:id="@+id/numberEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Number"
+        android:textSize="13sp"
+        android:padding="14dp"
+        android:background="@drawable/edittext_background"
+        android:elevation="6dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Give Amount"
+            android:backgroundTint="@color/blue"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:padding="14dp"
+            android:background="@drawable/textview_background"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="10dp"
+            />
+
+        <TextView
+            android:id="@+id/totalAmountTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="1000000"
+            android:backgroundTint="@color/blue"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:padding="14dp"
+            android:background="@drawable/textview_background"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="10dp"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Per Person Cost"
+            android:textSize="13sp"
+            android:backgroundTint="@color/green"
+            android:textColor="@color/white"
+            android:padding="14dp"
+            android:background="@drawable/textview_background"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            />
+
+        <TextView
+            android:id="@+id/perPersonCostTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="1000000"
+            android:textSize="13sp"
+            android:padding="14dp"
+            android:background="@drawable/textview_background"
+            android:backgroundTint="@color/green"
+            android:textColor="@color/white"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <TextView
+            android:id="@+id/giveOrTakeAmountTextViewLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Will Give"
+            android:textSize="13sp"
+            android:backgroundTint="@color/red"
+            android:textColor="@color/white"
+            android:padding="14dp"
+            android:background="@drawable/textview_background"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="5dp"
+            />
+
+        <TextView
+            android:id="@+id/giveOrTakeAmountTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="1000000"
+            android:textSize="13sp"
+            android:padding="14dp"
+            android:background="@drawable/textview_background"
+            android:backgroundTint="@color/red"
+            android:textColor="@color/white"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="5dp"
+            />
+
+    </LinearLayout>
+
+
+    <EditText
+        android:id="@+id/amountEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Amount"
+        android:inputType="number"
+        android:textSize="13sp"
+        android:padding="14dp"
+        android:background="@drawable/edittext_background"
+        android:elevation="6dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="10dp"
+        />
+
+    <EditText
+        android:id="@+id/dateEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Date"
+        android:focusable="false"
+        android:textSize="13sp"
+        android:padding="14dp"
+        android:background="@drawable/edittext_background"
+        android:elevation="6dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="10dp"
+        />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/saveButton"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Save"
+        android:padding="14dp"
+        android:background="@drawable/button_background"
+        android:elevation="6dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="40dp"
+        android:layout_marginTop="10dp"
+        />
+
+
+
+</LinearLayout>
