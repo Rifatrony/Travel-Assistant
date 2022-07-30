@@ -36,7 +36,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
     TextView previousAmountTextView;
 
     String new_value;
-    int new_amount, updated_amount;
+    double new_amount, updated_amount;
 
     Calendar calendar;
     int year, month, day;
@@ -142,9 +142,9 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
                     @Override
                     public void afterTextChanged(Editable editable) {
                         if (!editable.toString().isEmpty()){
-                            updated_amount = Integer.parseInt(data.getAmount()) + Integer.parseInt(editable.toString());
+                            updated_amount = Double.parseDouble(data.getAmount()) + Double.parseDouble(editable.toString());
                             System.out.println("Value is " + updated_amount);
-                            previousAmountTextView.setText(""+ updated_amount);
+                            previousAmountTextView.setText(String.valueOf(updated_amount));
 
                         }
                     }

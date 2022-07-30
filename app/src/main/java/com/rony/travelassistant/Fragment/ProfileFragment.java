@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.rony.travelassistant.Activity.DashBoardActivity;
 import com.rony.travelassistant.Activity.LoginActivity;
 import com.rony.travelassistant.R;
 
@@ -31,7 +32,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(getContext(), LoginActivity.class));
+                startActivity(new Intent(getContext(), DashBoardActivity.class));
                 getActivity().finish();
             }
         });

@@ -70,7 +70,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     double totalMemberDouble;
     double total_balanceInt = 0, remaining_balance = 0;
     double perPersonCost, total_balance = 0;
-    int remaining_amount = 0, costAmount = 0 ;
+    double remaining_amount = 0, costAmount = 0 ;
 
 
     RecyclerView memberListRecyclerView, costListRecyclerView;
@@ -227,10 +227,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                                         total_balanceInt += Double.parseDouble(data.getAmount());
                                         remaining_balance = total_balance - total_cost;
-                                        remainingBalanceTextView.setText("" + remaining_balance);
+                                        remainingBalanceTextView.setText(String.valueOf(remaining_balance));
 
                                         HashMap hashMap = new HashMap();
                                         hashMap.put("per_person_cost", String.valueOf(perPersonCost));
+                                        hashMap.put("remaining_balance", String.valueOf(remaining_balance));
 
                                         dbMember.child(data.getId()).updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
                                             @Override
@@ -484,7 +485,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         costReasonEditText = dialog.findViewById(R.id.costReasonEditText);
         addCostButton = dialog.findViewById(R.id.addCostButton);
 
-        remaining_amount = Integer.parseInt(remainingBalanceTextView.getText().toString());
+        remaining_amount = Double.parseDouble(remainingBalanceTextView.getText().toString());
 
 
         /*if (remaining_amount < Integer.parseInt(costAmountEditText.getText().toString())){
@@ -507,11 +508,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void afterTextChanged(Editable editable) {
                 if (!editable.toString().isEmpty()){
-                    int rest_remaining_amount = remaining_amount - Integer.parseInt(editable.toString());
+                    double rest_remaining_amount = remaining_amount - Double.parseDouble(editable.toString());
                     System.out.println("\n\n" + rest_remaining_amount);
                     remainingAmountTextView.setText(String.valueOf(rest_remaining_amount));
 
-                    if (remaining_amount < Integer.parseInt(editable.toString())){
+                    if (remaining_amount < Double.parseDouble(editable.toString())){
                         showToast("You don't have sufficient balance");
                         remainingAmountTextView.setText("You don't have sufficient balance");
                         return;
@@ -522,7 +523,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         return;
                     }
 
-                    else if (Integer.parseInt(editable.toString()) < 0){
+                    else if (Double.parseDouble(editable.toString()) < 0){
                         showToast("Invalid");
                         remainingAmountTextView.setText("Invalid");
                         return;
