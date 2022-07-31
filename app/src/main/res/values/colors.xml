@@ -10,6 +10,7 @@
     <color name="view_color">#E6E7EF</color>
     <color name="green">#0F8F14</color>
     <color name="blue">#062AF3</color>
+    <color name="sky_blue">#4F5B9E</color>
     <color name="red">#F31404</color>
     <color name="yellow">#FB9703</color>
 </resources>

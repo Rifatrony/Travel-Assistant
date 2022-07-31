@@ -16,6 +16,7 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +46,9 @@ import java.util.Locale;
 
 public class FavouritePlaceActivity extends AppCompatActivity {
 
+    ImageView imageBack;
+    ProgressBar progressBar;
+
     RecyclerView favouritePlaceRecyclerView;
     FavouritePlaceAdapter favouritePlaceAdapter;
     List<FavouritePlaceModel> favouritePlaceModelList;
@@ -72,6 +76,14 @@ public class FavouritePlaceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_favourite_place);
 
         dialog = new Dialog(FavouritePlaceActivity.this);
+        imageBack = findViewById(R.id.imageBack);
+        progressBar = findViewById(R.id.progressBar);
+        imageBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.CANADA);
         Date now = new Date();
@@ -90,12 +102,15 @@ public class FavouritePlaceActivity extends AppCompatActivity {
         favouritePlaceAdapter = new FavouritePlaceAdapter(this, favouritePlaceModelList);
         favouritePlaceRecyclerView.setAdapter(favouritePlaceAdapter);
 
+        progressBar.setVisibility(View.VISIBLE);
+
         dbPicture.addValueEventListener(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 favouritePlaceModelList.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    progressBar.setVisibility(View.INVISIBLE);
                     FavouritePlaceModel data = dataSnapshot.getValue(FavouritePlaceModel.class);
                     favouritePlaceModelList.add(data);
                 }
@@ -104,7 +119,7 @@ public class FavouritePlaceActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                progressBar.setVisibility(View.INVISIBLE);
             }
         });
 

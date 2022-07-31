@@ -48,10 +48,11 @@
 
         <ProgressBar
             android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_gravity="center"
             android:visibility="gone"
+            android:indeterminateDrawable="@drawable/custom_progress_bar"
             />
 
     </FrameLayout>
