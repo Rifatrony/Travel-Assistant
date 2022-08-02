@@ -21,7 +21,7 @@ import com.rony.travelassistant.R;
 public class FavouritePlaceDetailsActivity extends AppCompatActivity implements View.OnClickListener {
 
     String place_name;
-    TextView titleTextView, placeNameTextView, placeDetailsTextView;
+    TextView titleTextView, placeNameTextView, placeDetailsTextView, howToGoTextView, whereToStayTextView;
     ImageView imageBack, favouritePlaceImageView;
 
     DatabaseReference dbDetails;
@@ -51,7 +51,9 @@ public class FavouritePlaceDetailsActivity extends AppCompatActivity implements 
                     if (data.getPlace_name().equals(place_name)){
                         Glide.with(FavouritePlaceDetailsActivity.this).load(data.getImage_link()).into(favouritePlaceImageView);
                         placeNameTextView.setText(data.getPlace_name());
-                        placeDetailsTextView.setText(data.getPlace_details());
+                        placeDetailsTextView.setText("Details\n\n"+data.getPlace_details());
+                        howToGoTextView.setText(data.getHow_to_travel());
+                        whereToStayTextView.setText(data.getWhere_to_stay());
                     }
                 }
             }
@@ -71,6 +73,8 @@ public class FavouritePlaceDetailsActivity extends AppCompatActivity implements 
         titleTextView = findViewById(R.id.titleTextView);
         placeNameTextView = findViewById(R.id.placeNameTextView);
         placeDetailsTextView = findViewById(R.id.placeDetailsTextView);
+        howToGoTextView = findViewById(R.id.howToGoTextView);
+        whereToStayTextView = findViewById(R.id.whereToStayTextView);
         imageBack = findViewById(R.id.imageBack);
         favouritePlaceImageView = findViewById(R.id.favouritePlaceImageView);
     }
