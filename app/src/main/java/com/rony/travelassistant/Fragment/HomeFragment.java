@@ -1,8 +1,10 @@
 package com.rony.travelassistant.Fragment;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -66,7 +68,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     String tour_name, start_date, end_date;
     String cost_amount, cost_date, cost_reason;
 
-    String id, uid, tour_id;
+    public String id, uid, tour_id, member_id;
     int totalMember = 0, total_cost = 0;
     double totalMemberDouble;
     double total_balanceInt = 0, remaining_balance = 0;
@@ -84,6 +86,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     DatabaseReference dbTour, dbMember, dbMemberList, dbCost, dbBalance, dbTotalCost, dbGetTour;
 
+    DatabaseReference dbSpam;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -96,6 +100,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         FetchMemberList();
         FetchTotalMember();
         FetchCostList();
+
 
         //FetchTotalBalance();
 
@@ -115,18 +120,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                         if (tourModel.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
 
-                            showToast("Found");
                             deleteTourTextView.setVisibility(View.VISIBLE);
                         }
                         // if not found my uid but other create some tour
                         else{
                             createTourTextView.setVisibility(View.VISIBLE);
-                            showToast("Has some tour");
                         }
                     }
                 }
                 else {
-                    showToast("Not Found");
+                    createTourTextView.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -182,6 +185,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         startDateTextView.setText(data.getStart_date());
                         endDateTextView.setText(data.getEnd_date());
                         tour_id = data.getId();
+                        System.out.println("Tour Id " + tour_id);
 
                     }
                 }
@@ -223,7 +227,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void FetchMemberList() {
-
         memberListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         memberListRecyclerView.setHasFixedSize(true);
         memberModelList = new ArrayList<>();
@@ -240,10 +243,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren())
                 {
                     MemberModel data = dataSnapshot.getValue(MemberModel.class);
+
                     if (data.getAdded_by_uid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
                         memberModelList.add(data);
                         total_balance  += Double.parseDouble(data.getAmount());
                         totalBalanceTextView.setText(total_balance +" Tk.");
+                        member_id = data.getId();
+                        showToast(member_id);
                     }
                 }
                 memberAdapter.notifyDataSetChanged();
@@ -321,7 +327,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                                     if (data.getAdded_by_uid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
 
                                         total_balanceInt += Double.parseDouble(data.getAmount());
-                                        
+
                                         remaining_balance = total_balance - total_cost;
                                         remainingBalanceTextView.setText(String.valueOf(remaining_balance));
                                         System.out.println("remaining_balance" + total_balance);
@@ -394,6 +400,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         dbCost = FirebaseDatabase.getInstance().getReference().child("Cost");
         dbMemberList = FirebaseDatabase.getInstance().getReference().child("Member List").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
+        dbSpam = FirebaseDatabase.getInstance().getReference().child("Spam");
+
         createTourTextView = view.findViewById(R.id.createTourTextView);
         deleteTourTextView = view.findViewById(R.id.deleteTourTextView);
         addCostImageView = view.findViewById(R.id.addCostImageView);
@@ -416,6 +424,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void setListener(){
         createTourTextView.setOnClickListener(this);
+        deleteTourTextView.setOnClickListener(this);
         addCostImageView.setOnClickListener(this);
         memberListTextView.setOnClickListener(this);
     }
@@ -426,6 +435,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         switch (view.getId()){
             case R.id.createTourTextView:
                 CreateTour();
+                break;
+
+            case R.id.deleteTourTextView:
+                ClearTourDetails();
                 break;
 
             case R.id.addCostImageView:
@@ -442,6 +455,158 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 startActivity(new Intent(getContext(), MembersActivity.class));
                 break;
         }
+    }
+
+    private void ClearTourDetails() {
+        AlertDialog.Builder builder;
+        builder = new AlertDialog.Builder(getContext());
+
+        builder.setMessage("Click 'YES' to delete all the record of this tour.")
+                .setCancelable(false)
+                .setIcon(R.drawable.button)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        System.out.println("TT ===========>"+tour_id);
+                        showToast(tour_id);
+
+                        dbCost.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                                    CostModel costModel = dataSnapshot.getValue(CostModel.class);
+                                    if (costModel.getTour_id().equals(tour_id)){
+                                        dbCost.child(costModel.getId()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()){
+
+                                                    HashMap hashMap = new HashMap();
+                                                    hashMap.put("amount", costModel.getAmount());
+                                                    hashMap.put("date", costModel.getDate());
+                                                    hashMap.put("id", costModel.getId());
+                                                    hashMap.put("reason", costModel.getReason());
+                                                    hashMap.put("tour_id", costModel.getTour_id());
+                                                    hashMap.put("uid", costModel.getUid());
+
+                                                    dbSpam.child(costModel.getUid()).child(costModel.getTour_id()).child("Cost").updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task task) {
+                                                            if (task.isSuccessful()){
+                                                                showToast("Remove and save to SPAM");
+                                                            }else {
+                                                                showToast(task.getException().toString());
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
+                        dbTour.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                                    TourModel tourModel = dataSnapshot.getValue(TourModel.class);
+                                    if (tourModel.getId().equals(tour_id)){
+                                        dbTour.child(tour_id).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()){
+                                                    HashMap hashMap = new HashMap();
+                                                    hashMap.put("end_date", tourModel.getEnd_date());
+                                                    hashMap.put("start_date", tourModel.getStart_date());
+                                                    hashMap.put("id", tourModel.getId());
+                                                    hashMap.put("tour_name", tourModel.getTour_name());
+                                                    hashMap.put("uid", tourModel.getUid());
+
+                                                    dbSpam.child(tourModel.getUid()).child(tourModel.getId()).child("Tour").updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task task) {
+                                                            if (task.isSuccessful()){
+                                                                showToast("Success");
+                                                            }
+                                                            else {
+                                                                showToast(task.getException().toString());
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
+                        dbMember.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                                    MemberModel memberModel = dataSnapshot.getValue(MemberModel.class);
+                                    if (memberModel.getTour_id().equals(tour_id)){
+                                        dbMember.child(memberModel.getId()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()){
+                                                    HashMap hashMap = new HashMap();
+                                                    hashMap.put("added_by_uid", memberModel.getAdded_by_uid());
+                                                    hashMap.put("amount", memberModel.getAmount());
+                                                    hashMap.put("date", memberModel.getDate());
+                                                    hashMap.put("email", memberModel.getEmail());
+                                                    hashMap.put("id", memberModel.getId());
+                                                    hashMap.put("name", memberModel.getName());
+                                                    hashMap.put("number", memberModel.getNumber());
+                                                    hashMap.put("per_person_cost", memberModel.getPer_person_cost());
+                                                    hashMap.put("tour_id", memberModel.getTour_id());
+                                                    hashMap.put("tour_name", memberModel.getTour_name());
+
+
+
+                                                }
+                                                else {
+                                                    showToast(task.getException().toString());
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
+
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+
+        AlertDialog alert = builder.create();
+        alert.setTitle("Are you sure you want to Clear This Tour?");
+        alert.show();
+        //alertDialog = new AlertDialog(this);
     }
 
 
@@ -681,6 +846,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 cost_date = costDateEditText.getText().toString().trim();
                 cost_reason = costReasonEditText.getText().toString().trim();
 
+                System.out.println("Tour ID ....................." + tour_id);
 
                 if (cost_amount.isEmpty()){
                     showToast("Enter Amount");
@@ -707,7 +873,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     hashMap.put("date", cost_date);
                     hashMap.put("id", id);
                     hashMap.put("reason", cost_reason);
+                    hashMap.put("tour_id", tour_id);
                     hashMap.put("uid", FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+                    //showToast(tour_name);
 
                     dbCost.child(id).updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
                         @Override
