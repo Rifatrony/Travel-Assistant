@@ -57,10 +57,10 @@
                         android:layout_weight="1"
                         android:text="Total Member "
                         android:textSize="14sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/dark_khaki"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
-
+                        android:textStyle="bold"
                         />
 
                     <TextView
@@ -69,9 +69,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textSize="14sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/dark_khaki"
                         android:paddingStart="6dp"
                         android:paddingEnd="16dp"
+                        android:textStyle="bold"
                         />
 
 
@@ -90,9 +91,10 @@
                         android:layout_weight="1"
                         android:text="Start Date"
                         android:textSize="14sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/hot_pink"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
+                        android:textStyle="bold"
 
                         />
 
@@ -102,9 +104,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textSize="14sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/hot_pink"
                         android:paddingStart="6dp"
                         android:paddingEnd="16dp"
+                        android:textStyle="bold"
                         />
 
 
@@ -123,10 +126,10 @@
                         android:layout_weight="1"
                         android:text="End Date"
                         android:textSize="14sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/orchid"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
-
+                        android:textStyle="bold"
                         />
 
                     <TextView
@@ -135,9 +138,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textSize="14sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/orchid"
                         android:paddingStart="6dp"
                         android:paddingEnd="16dp"
+                        android:textStyle="bold"
                         />
 
 
@@ -156,10 +160,10 @@
                         android:layout_weight="1"
                         android:text="Total Balance "
                         android:textSize="14sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/green"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
-
+                        android:textStyle="bold"
                         />
 
                     <TextView
@@ -168,9 +172,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textSize="14sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/green"
                         android:paddingStart="6dp"
                         android:paddingEnd="16dp"
+                        android:textStyle="bold"
                         />
 
 
@@ -189,9 +194,10 @@
                         android:layout_weight="1"
                         android:text="Total Cost "
                         android:textSize="14sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/red"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
+                        android:textStyle="bold"
 
                         />
 
@@ -201,9 +207,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textSize="14sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/red"
                         android:paddingStart="6dp"
                         android:paddingEnd="16dp"
+                        android:textStyle="bold"
                         />
 
 
@@ -222,10 +229,10 @@
                         android:layout_weight="1"
                         android:text="Remaining Balance "
                         android:textSize="14sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/dodger_blue"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
-
+                        android:textStyle="bold"
                         />
 
                     <TextView
@@ -234,9 +241,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textSize="14sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/dodger_blue"
                         android:paddingStart="6dp"
                         android:paddingEnd="16dp"
+                        android:textStyle="bold"
                         />
 
 
@@ -256,10 +264,10 @@
                         android:layout_weight="1"
                         android:text="Per Person Cost"
                         android:textSize="14sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/dark_slate_blue"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
-
+                        android:textStyle="bold"
                         />
 
                     <TextView
@@ -268,9 +276,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textSize="14sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/dark_slate_blue"
                         android:paddingStart="6dp"
                         android:paddingEnd="16dp"
+                        android:textStyle="bold"
                         />
 
                 </LinearLayout>
@@ -279,22 +288,49 @@
 
         </androidx.cardview.widget.CardView>
 
-        <TextView
-            android:id="@+id/createTourTextView"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="CREATE TOUR"
-            android:gravity="center"
-            android:textSize="16sp"
-            android:background="@drawable/edittext_background"
-            android:elevation="6dp"
-            android:textColor="@color/black"
-            android:padding="16dp"
-            android:layout_marginStart="26dp"
-            android:layout_marginEnd="26dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            />
+            android:layout_height="70dp"
+
+            >
+
+            <TextView
+                android:id="@+id/createTourTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CREATE TOUR"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:background="@drawable/edittext_background"
+                android:elevation="6dp"
+                android:textColor="@color/black"
+                android:padding="16dp"
+                android:layout_marginStart="26dp"
+                android:layout_marginEnd="26dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:visibility="gone"
+                />
+
+            <TextView
+                android:id="@+id/deleteTourTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="DELETE TOUR"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:background="@drawable/edittext_background"
+                android:elevation="6dp"
+                android:textColor="@color/black"
+                android:padding="16dp"
+                android:layout_marginStart="26dp"
+                android:layout_marginEnd="26dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:visibility="gone"
+                />
+
+        </FrameLayout>
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"

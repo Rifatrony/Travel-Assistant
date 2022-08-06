@@ -48,7 +48,7 @@ import java.util.List;
 public class HomeFragment extends Fragment implements View.OnClickListener {
 
     View view;
-    TextView createTourTextView, titleTextView;
+    TextView createTourTextView, deleteTourTextView, titleTextView;
 
     ImageView addCostImageView;
 
@@ -70,7 +70,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     int totalMember = 0, total_cost = 0;
     double totalMemberDouble;
     double total_balanceInt = 0, remaining_balance = 0;
-    double perPersonCost, total_balance = 0;
+    double perPersonCost, total_balance = 0, remain_balance = 0;
     double remaining_amount = 0, costAmount = 0 ;
 
 
@@ -82,7 +82,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     List<CostModel> costModelList;
 
 
-    DatabaseReference dbTour, dbMember, dbMemberList, dbCost, dbBalance;
+    DatabaseReference dbTour, dbMember, dbMemberList, dbCost, dbBalance, dbTotalCost, dbGetTour;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -90,21 +90,79 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
-
-        System.out.println("totalMember");
-
         initialization();
         setListener();
         fetchTourName();
         FetchMemberList();
         FetchTotalMember();
         FetchCostList();
-        FetchTotalBalance();
+
+        //FetchTotalBalance();
 
         calendar = Calendar.getInstance();
         year = calendar.get(Calendar.YEAR);
         month = calendar.get(Calendar.MONTH);
         day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        dbTour.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                        TourModel tourModel = dataSnapshot.getValue(TourModel.class);
+
+                        // if found my uid and if i create any tour
+
+                        if (tourModel.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+
+                            showToast("Found");
+                            deleteTourTextView.setVisibility(View.VISIBLE);
+                        }
+                        // if not found my uid but other create some tour
+                        else{
+                            createTourTextView.setVisibility(View.VISIBLE);
+                            showToast("Has some tour");
+                        }
+                    }
+                }
+                else {
+                    showToast("Not Found");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+        if (totalCostTextView.getText().toString().isEmpty()){
+
+            dbMember.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    remain_balance = 0;
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                        MemberModel data = dataSnapshot.getValue(MemberModel.class);
+                        if (data.getAdded_by_uid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                            remain_balance += Double.parseDouble(data.getAmount());
+                            remainingBalanceTextView.setText(String.valueOf(remain_balance));
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+
+
+        else {
+
+        }
 
         return view;
     }
@@ -124,6 +182,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         startDateTextView.setText(data.getStart_date());
                         endDateTextView.setText(data.getEnd_date());
                         tour_id = data.getId();
+
                     }
                 }
             }
@@ -142,16 +201,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                total_balance = 0;
+                //remain_balance = 0;
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren())
                 {
                     BalanceModel data = dataSnapshot.getValue(BalanceModel.class);
 
                     if (!data.getTour_id().isEmpty()){
-                        total_balance  += Double.parseDouble(data.getAmount());
+                        //remain_balance  += Double.parseDouble(data.getAmount());
                         //totalBalanceTextView.setText(total_balance +" Tk.");
-                        remainingBalanceTextView.setText(String.valueOf(total_balance));
+                        remainingBalanceTextView.setText(String.valueOf(data.getAmount()));
                     }
                 }
             }
@@ -206,7 +265,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         costModelList =  new ArrayList<>();
         costAdapter = new CostAdapter(getContext(), costModelList);
         costListRecyclerView.setAdapter(costAdapter);
-
 
         dbCost.addValueEventListener(new ValueEventListener() {
             @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
@@ -263,6 +321,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                                     if (data.getAdded_by_uid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
 
                                         total_balanceInt += Double.parseDouble(data.getAmount());
+                                        
                                         remaining_balance = total_balance - total_cost;
                                         remainingBalanceTextView.setText(String.valueOf(remaining_balance));
                                         System.out.println("remaining_balance" + total_balance);
@@ -302,6 +361,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             }
         });
+
     }
 
     private void FetchTotalMember() {
@@ -330,10 +390,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         dbMember = FirebaseDatabase.getInstance().getReference().child("Member");
         dbTour = FirebaseDatabase.getInstance().getReference().child("Tour");
+        dbGetTour = FirebaseDatabase.getInstance().getReference();
         dbCost = FirebaseDatabase.getInstance().getReference().child("Cost");
         dbMemberList = FirebaseDatabase.getInstance().getReference().child("Member List").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
         createTourTextView = view.findViewById(R.id.createTourTextView);
+        deleteTourTextView = view.findViewById(R.id.deleteTourTextView);
         addCostImageView = view.findViewById(R.id.addCostImageView);
 
         titleTextView = view.findViewById(R.id.titleTextView);

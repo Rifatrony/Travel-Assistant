@@ -79,6 +79,10 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
 
                 new_amount = 0;
 
+                /*new_amount = new_amount + Double.parseDouble(data.getAmount());
+
+                System.out.println("New amount is " + updated_amount);*/
+
                 Dialog dialog = new Dialog(context);
                 dialog.setContentView(R.layout.member_details_layout);
                 dialog.show();
@@ -171,7 +175,6 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
 
                         DatabaseReference dbMember, dbBalance;
                         dbMember = FirebaseDatabase.getInstance().getReference().child("Member").child(data.getId());
-                        dbBalance = FirebaseDatabase.getInstance().getReference().child("Balance");
 
                         new_amount = 0;
 
@@ -181,64 +184,6 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
                                 if (task.isSuccessful()){
                                     Toast.makeText(context, "Updated", Toast.LENGTH_SHORT).show();
                                     dialog.dismiss();
-
-                                    String balance_id;
-                                    balance_id = dbBalance.push().getKey();
-
-                                    new_amount = new_amount + Double.parseDouble(data.getAmount());
-
-                                    System.out.println("New amount is " + updated_amount);
-
-                                    DatabaseReference databaseReference;
-
-                                    databaseReference = FirebaseDatabase.getInstance().getReference().child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-
-                                    databaseReference.addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                                            total = 0;
-
-                                            for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-                                                BalanceModel model = dataSnapshot.getValue(BalanceModel.class);
-
-                                                System.out.println("Balance is " + model
-                                                        .getAmount());
-
-                                                total = updated_amount + Double.parseDouble(model.getAmount());
-
-                                                System.out.println("Total is " + total);
-
-                                                HashMap balance = new HashMap();
-                                                balance.put("amount", String.valueOf(total));
-                                                balance.put("balance_id", balance_id);
-                                                balance.put("tour_id", data.getTour_id());
-                                                balance.put("added_by_id", FirebaseAuth.getInstance().getCurrentUser().getUid());
-
-
-                                                dbBalance.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                                        .child(data.getTour_id()).updateChildren(balance).addOnCompleteListener(new OnCompleteListener() {
-                                                            @Override
-                                                            public void onComplete(@NonNull Task task) {
-                                                                if (task.isSuccessful()){
-                                                                    Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
-                                                                }
-                                                                else {
-                                                                    Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
-                                                                }
-                                                            }
-                                                        });
-
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-
-                                        }
-                                    });
-
-
 
 
                                 }else {
@@ -254,6 +199,28 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MemberView
 
             }
         });
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Balance").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    BalanceModel model = dataSnapshot.getValue(BalanceModel.class);
+
+
+
+                    Toast.makeText(context, String.valueOf(model.getAmount()), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, String.valueOf(data.getAmount()), Toast.LENGTH_SHORT).show();
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
     @Override
