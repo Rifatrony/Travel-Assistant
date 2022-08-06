@@ -51,7 +51,7 @@ public class FavouritePlaceDetailsActivity extends AppCompatActivity implements 
                     if (data.getPlace_name().equals(place_name)){
                         Glide.with(FavouritePlaceDetailsActivity.this).load(data.getImage_link()).into(favouritePlaceImageView);
                         placeNameTextView.setText(data.getPlace_name());
-                        placeDetailsTextView.setText("Details\n\n"+data.getPlace_details());
+                        placeDetailsTextView.setText(data.getPlace_details());
                         howToGoTextView.setText(data.getHow_to_travel());
                         whereToStayTextView.setText(data.getWhere_to_stay());
                     }

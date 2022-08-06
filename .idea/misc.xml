@@ -4,7 +4,11 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Travel-Assistant/app/src/main/res/drawable/details_text_view.xml" value="0.1" />
+        <entry key="..\:/Travel-Assistant/app/src/main/res/layout/activity_dash_board.xml" value="0.1" />
         <entry key="..\:/Travel-Assistant/app/src/main/res/layout/activity_favourite_place_details.xml" value="0.20416666666666666" />
+        <entry key="..\:/Travel-Assistant/app/src/main/res/layout/fragment_home.xml" value="0.20416666666666666" />
+        <entry key="..\:/Travel-Assistant/app/src/main/res/layout/member_all_details_layout.xml" value="0.20416666666666666" />
+        <entry key="..\:/Travel-Assistant/app/src/main/res/layout/member_details_layout.xml" value="0.20416666666666666" />
         <entry key="app/src/main/res/drawable-v24/button_background.xml" value="0.1865" />
         <entry key="app/src/main/res/drawable/custom_progress_bar.xml" value="0.1985" />
         <entry key="app/src/main/res/drawable/edittext_background.xml" value="0.1865" />

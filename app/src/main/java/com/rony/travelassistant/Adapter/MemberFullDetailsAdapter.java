@@ -66,13 +66,17 @@ public class MemberFullDetailsAdapter extends RecyclerView.Adapter<MemberFullDet
     @Override
     public void onBindViewHolder(@NonNull MemberViewHolder holder, int position) {
         MemberModel data = memberModelList.get(position);
-        perPersonCost = Double.parseDouble(data.getPer_person_cost());
+        if (!data.getPer_person_cost().isEmpty()){
+            perPersonCost = Double.parseDouble(data.getPer_person_cost());
+        }
+        else {
+
+        }
         givenAmount = Double.parseDouble(data.getAmount());
         holder.nameTextView.setText(data.getName());
         holder.numberTextView.setText(data.getNumber());
         holder.amountTextView.setText(": "+givenAmount +" Tk.");
         holder.perPersonCostTextView.setText(": "+ perPersonCost +" Tk.");
-
 
 
         if (givenAmount > perPersonCost){

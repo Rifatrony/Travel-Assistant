@@ -34,6 +34,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.rony.travelassistant.Activity.MembersActivity;
 import com.rony.travelassistant.Adapter.CostAdapter;
 import com.rony.travelassistant.Adapter.MemberAdapter;
+import com.rony.travelassistant.Model.BalanceModel;
 import com.rony.travelassistant.Model.CostModel;
 import com.rony.travelassistant.Model.MemberModel;
 import com.rony.travelassistant.Model.TourModel;
@@ -81,7 +82,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     List<CostModel> costModelList;
 
 
-    DatabaseReference dbTour, dbMember, dbMemberList, dbCost;
+    DatabaseReference dbTour, dbMember, dbMemberList, dbCost, dbBalance;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -90,12 +91,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
 
+        System.out.println("totalMember");
+
         initialization();
         setListener();
         fetchTourName();
         FetchMemberList();
-        FetchCostList();
         FetchTotalMember();
+        FetchCostList();
+        FetchTotalBalance();
 
         calendar = Calendar.getInstance();
         year = calendar.get(Calendar.YEAR);
@@ -131,6 +135,34 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
+    private void FetchTotalBalance(){
+
+        dbBalance.addValueEventListener(new ValueEventListener() {
+            @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                total_balance = 0;
+
+                for (DataSnapshot dataSnapshot : snapshot.getChildren())
+                {
+                    BalanceModel data = dataSnapshot.getValue(BalanceModel.class);
+
+                    if (!data.getTour_id().isEmpty()){
+                        total_balance  += Double.parseDouble(data.getAmount());
+                        //totalBalanceTextView.setText(total_balance +" Tk.");
+                        remainingBalanceTextView.setText(String.valueOf(total_balance));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     private void FetchMemberList() {
 
         memberListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -145,9 +177,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 memberModelList.clear();
-
                 total_balance = 0;
-
                 for (DataSnapshot dataSnapshot : snapshot.getChildren())
                 {
                     MemberModel data = dataSnapshot.getValue(MemberModel.class);
@@ -187,10 +217,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 total_cost = 0;
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-                    CostModel data = dataSnapshot.getValue(CostModel.class);
-                    if (data.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
-                        costModelList.add(data);
 
+                    CostModel data = dataSnapshot.getValue(CostModel.class);
+
+                    if (data.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+
+                        costModelList.add(data);
                         total_cost += Integer.parseInt(data.getAmount());
                         totalCostTextView.setText(total_cost+" Tk.");
 
@@ -198,9 +230,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                             @SuppressLint("SetTextI18n")
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                                totalMember = 0 ;
                                 if (snapshot.exists()){
 
                                     totalMember = (int) snapshot.getChildrenCount();
+
+                                    System.out.println("totalMember" + totalMember);
                                     perPersonCost = total_cost/totalMember;
                                     perPersonCostTextView.setText(perPersonCost+" Tk.");
 
@@ -223,11 +259,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                                 for (DataSnapshot dataSnapshot : snapshot.getChildren())
                                 {
                                     MemberModel data = dataSnapshot.getValue(MemberModel.class);
+
                                     if (data.getAdded_by_uid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
 
                                         total_balanceInt += Double.parseDouble(data.getAmount());
                                         remaining_balance = total_balance - total_cost;
                                         remainingBalanceTextView.setText(String.valueOf(remaining_balance));
+                                        System.out.println("remaining_balance" + total_balance);
 
                                         HashMap hashMap = new HashMap();
                                         hashMap.put("per_person_cost", String.valueOf(perPersonCost));
@@ -237,6 +275,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                                             @Override
                                             public void onComplete(@NonNull Task task) {
                                                 if (task.isSuccessful()){
+
                                                 }else {
                                                     showToast(task.getException().toString());
                                                 }
@@ -286,6 +325,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void initialization() {
 
+        dbBalance = FirebaseDatabase.getInstance().getReference().child("Balance")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
         dbMember = FirebaseDatabase.getInstance().getReference().child("Member");
         dbTour = FirebaseDatabase.getInstance().getReference().child("Tour");
         dbCost = FirebaseDatabase.getInstance().getReference().child("Cost");
@@ -325,7 +367,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 break;
 
             case R.id.addCostImageView:
-                AddCost();
+
+                if (!remainingBalanceTextView.getText().toString().isEmpty()){
+                    AddCost();
+                }
+                else {
+                    showToast("You have no balance");
+                }
                 break;
 
             case R.id.memberListTextView:
@@ -487,11 +535,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         remaining_amount = Double.parseDouble(remainingBalanceTextView.getText().toString());
 
-
-        /*if (remaining_amount < Integer.parseInt(costAmountEditText.getText().toString())){
-            remainingAmountTextView.setText("Invalid");
-        }*/
-
         remainingAmountTextView.setText(String.valueOf(remaining_amount));
 
         costAmountEditText.addTextChangedListener(new TextWatcher() {
@@ -533,8 +576,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 }
             }
         });
-
-
 
         costDateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -595,6 +636,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 }
 
                 else {
+
                     String id;
                     id = dbCost.push().getKey();
 
@@ -611,6 +653,41 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                             if (task.isSuccessful()){
                                 showToast("New Cost Added");
                                 dialog.dismiss();
+
+                                dbBalance.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+
+                                            BalanceModel data = dataSnapshot.getValue(BalanceModel.class);
+                                                if (!data.getTour_id().isEmpty()){
+                                                    HashMap balance = new HashMap();
+                                                    balance.put("amount", String.valueOf(remainingAmountTextView.getText().toString()));
+
+                                                    dbBalance.child(data.getTour_id()).updateChildren(balance).addOnCompleteListener(new OnCompleteListener() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task task) {
+                                                            if (task.isSuccessful()){
+                                                                showToast("Balance Updated");
+                                                            }
+                                                            else {
+                                                                showToast(task.getException().toString());
+                                                            }
+                                                        }
+                                                    });
+                                                }
+
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                });
+
+
+
                             }
                             else {
                                 showToast(task.getException().toString());
