@@ -86,7 +86,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     List<CostModel> costModelList;
 
 
-    DatabaseReference dbTour, dbMember, dbMemberList, dbCost, dbBalance, dbGetTour;
+    DatabaseReference dbTour, dbMember, dbMemberList, dbCost, dbBalance, dbGetTour, dbTourID;
 
     DatabaseReference dbSpam;
 
@@ -406,6 +406,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         dbMember = FirebaseDatabase.getInstance().getReference().child("Member");
         dbTour = FirebaseDatabase.getInstance().getReference().child("Tour");
+        dbTourID = FirebaseDatabase.getInstance().getReference().child("Tour ID");
         dbGetTour = FirebaseDatabase.getInstance().getReference();
         dbCost = FirebaseDatabase.getInstance().getReference().child("Cost");
         dbMemberList = FirebaseDatabase.getInstance().getReference().child("Member List").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -642,6 +643,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                                                         public void onComplete(@NonNull Task task) {
                                                             if (task.isSuccessful()){
                                                                 //showToast("Success");
+
+                                                                String t_id;
+                                                                t_id = dbTourID.push().getKey();
+
+                                                                HashMap hashMap1 = new HashMap();
+                                                                hashMap1.put("tour_id", tourModel.getId());
+                                                                hashMap1.put("t_id", t_id);
+                                                                dbSpam.child(tourModel.getUid()).child("Tour ID").child(t_id).updateChildren(hashMap1).addOnCompleteListener(new OnCompleteListener() {
+                                                                    @Override
+                                                                    public void onComplete(@NonNull Task task) {
+                                                                        if (task.isSuccessful()){
+                                                                            showToast("Added");
+                                                                        }
+                                                                    }
+                                                                });
+
                                                             }
                                                             else {
                                                                 showToast(task.getException().toString());
