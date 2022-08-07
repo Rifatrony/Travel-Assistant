@@ -108,7 +108,11 @@ public class AddMemberFragment extends Fragment {
                     }
                 }
 
-                setTourAdapter(tourNameList, tourUidList);
+                try {
+                    setTourAdapter(tourNameList, tourUidList);
+                }catch (Exception e){
+
+                }
             }
 
             @Override

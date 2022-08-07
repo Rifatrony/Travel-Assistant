@@ -38,6 +38,7 @@ import com.rony.travelassistant.Adapter.CostAdapter;
 import com.rony.travelassistant.Adapter.MemberAdapter;
 import com.rony.travelassistant.Model.BalanceModel;
 import com.rony.travelassistant.Model.CostModel;
+import com.rony.travelassistant.Model.MemberListModel;
 import com.rony.travelassistant.Model.MemberModel;
 import com.rony.travelassistant.Model.TourModel;
 import com.rony.travelassistant.R;
@@ -62,18 +63,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     EditText costAmountEditText, costDateEditText, costReasonEditText;
 
     AppCompatButton saveTourButton, addCostButton;
-    TextView startDateTextView, endDateTextView, totalMemberTextView, totalBalanceTextView, memberListTextView, costListTextView,
-            totalCostTextView, perPersonCostTextView, remainingBalanceTextView, remainingAmountTextView;
+
+    TextView startDateTextView, endDateTextView, totalMemberTextView, totalBalanceTextView, memberListTextView,
+            costListTextView, totalCostTextView, perPersonCostTextView, remainingBalanceTextView, remainingAmountTextView;
 
     String tour_name, start_date, end_date;
     String cost_amount, cost_date, cost_reason;
 
-    public String id, uid, tour_id, member_id;
+    public String id, tour_id, member_id;
     int totalMember = 0, total_cost = 0;
-    double totalMemberDouble;
+
     double total_balanceInt = 0, remaining_balance = 0;
     double perPersonCost, total_balance = 0, remain_balance = 0;
-    double remaining_amount = 0, costAmount = 0 ;
+    double remaining_amount = 0;
 
 
     RecyclerView memberListRecyclerView, costListRecyclerView;
@@ -84,7 +86,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     List<CostModel> costModelList;
 
 
-    DatabaseReference dbTour, dbMember, dbMemberList, dbCost, dbBalance, dbTotalCost, dbGetTour;
+    DatabaseReference dbTour, dbMember, dbMemberList, dbCost, dbBalance, dbGetTour;
 
     DatabaseReference dbSpam;
 
@@ -118,18 +120,24 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                         // if found my uid and if i create any tour
 
+                        assert tourModel != null;
                         if (tourModel.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                            if (tourModel.getUid()!= null){
+                                deleteTourTextView.setVisibility(View.VISIBLE);
+                                createTourTextView.setVisibility(View.INVISIBLE);
+                            }
 
-                            deleteTourTextView.setVisibility(View.VISIBLE);
                         }
                         // if not found my uid but other create some tour
                         else{
                             createTourTextView.setVisibility(View.VISIBLE);
+                            deleteTourTextView.setVisibility(View.INVISIBLE);
                         }
                     }
                 }
                 else {
                     createTourTextView.setVisibility(View.VISIBLE);
+                    deleteTourTextView.setVisibility(View.INVISIBLE);
                 }
             }
 
@@ -148,7 +156,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     remain_balance = 0;
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                         MemberModel data = dataSnapshot.getValue(MemberModel.class);
-                        if (data.getAdded_by_uid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                        assert data != null;
+                        if (data.getAdded_by_uid()!=null && data.getAdded_by_uid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
                             remain_balance += Double.parseDouble(data.getAmount());
                             remainingBalanceTextView.setText(String.valueOf(remain_balance));
                         }
@@ -178,15 +187,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     TourModel data = dataSnapshot.getValue(TourModel.class);
-                    if (data.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                    assert data != null;
+                    if (data.getUid()!= null && data.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
                         titleTextView.setText(data.getTour_name());
                         memberListTextView.setText(data.getTour_name() +" (Member List)");
                         costListTextView.setText(data.getTour_name() +" (Cost List)");
                         startDateTextView.setText(data.getStart_date());
                         endDateTextView.setText(data.getEnd_date());
                         tour_id = data.getId();
-                        System.out.println("Tour Id " + tour_id);
-
                     }
                 }
             }
@@ -244,12 +252,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 {
                     MemberModel data = dataSnapshot.getValue(MemberModel.class);
 
-                    if (data.getAdded_by_uid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                    assert data != null;
+                    if (data.getAdded_by_uid() != null && data.getAdded_by_uid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
                         memberModelList.add(data);
                         total_balance  += Double.parseDouble(data.getAmount());
                         totalBalanceTextView.setText(total_balance +" Tk.");
                         member_id = data.getId();
-                        showToast(member_id);
                     }
                 }
                 memberAdapter.notifyDataSetChanged();
@@ -284,7 +292,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                     CostModel data = dataSnapshot.getValue(CostModel.class);
 
-                    if (data.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                    assert data != null;
+                    if (data.getUid() != null && data.getUid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
 
                         costModelList.add(data);
                         total_cost += Integer.parseInt(data.getAmount());
@@ -324,7 +333,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                                 {
                                     MemberModel data = dataSnapshot.getValue(MemberModel.class);
 
-                                    if (data.getAdded_by_uid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                                    assert data != null;
+                                    if (data.getAdded_by_uid() != null && data.getAdded_by_uid().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
 
                                         total_balanceInt += Double.parseDouble(data.getAmount());
 
@@ -470,6 +480,100 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         System.out.println("TT ===========>"+tour_id);
                         showToast(tour_id);
 
+                        dbMemberList.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                                    MemberListModel memberListModel = dataSnapshot.getValue(MemberListModel.class);
+                                    if (memberListModel.getTour_id().equals(tour_id)){
+                                        dbMemberList.child(memberListModel.getId()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()){
+                                                    HashMap hashMap = new HashMap();
+                                                    hashMap.put("id", memberListModel.getId());
+                                                    hashMap.put("tour_id", memberListModel.getTour_id());
+                                                    hashMap.put("tour_name", memberListModel.getTour_name());
+                                                    hashMap.put("uid", memberListModel.getUid());
+
+                                                    dbSpam.child(memberListModel.getUid()).child(memberListModel.getTour_id())
+                                                            .child("Member List").child(memberListModel.getUid())
+                                                            .child(memberListModel.getId()).updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task task) {
+                                                                    if (task.isSuccessful()){
+
+                                                                    }else {
+
+                                                                    }
+                                                                }
+                                                            });
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
+                        dbMember.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                                    MemberModel memberModel = dataSnapshot.getValue(MemberModel.class);
+                                    assert memberModel != null;
+                                    if (memberModel.getTour_id() != null && memberModel.getTour_id().equals(tour_id)){
+                                        dbMember.child(memberModel.getId()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()){
+                                                    HashMap hashMap = new HashMap();
+                                                    hashMap.put("added_by_uid", memberModel.getAdded_by_uid());
+                                                    hashMap.put("amount", memberModel.getAmount());
+                                                    hashMap.put("date", memberModel.getDate());
+                                                    hashMap.put("email", memberModel.getEmail());
+                                                    hashMap.put("id", memberModel.getId());
+                                                    hashMap.put("name", memberModel.getName());
+                                                    hashMap.put("number", memberModel.getNumber());
+                                                    hashMap.put("per_person_cost", memberModel.getPer_person_cost());
+                                                    hashMap.put("tour_id", memberModel.getTour_id());
+                                                    hashMap.put("tour_name", memberModel.getTour_name());
+
+
+                                                    dbSpam.child(memberModel.getAdded_by_uid()).child(memberModel.getTour_id())
+                                                            .child("Member").child(memberModel.getId())
+                                                            .updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
+                                                                @Override
+                                                                public void onComplete(@NonNull Task task) {
+                                                                    if (task.isSuccessful()){
+                                                                        showToast("Success");
+                                                                    }
+                                                                    else {
+                                                                        showToast(task.getException().toString());
+                                                                    }
+                                                                }
+                                                            });
+                                                }
+                                                else {
+                                                    showToast(task.getException().toString());
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
                         dbCost.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -489,7 +593,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                                                     hashMap.put("tour_id", costModel.getTour_id());
                                                     hashMap.put("uid", costModel.getUid());
 
-                                                    dbSpam.child(costModel.getUid()).child(costModel.getTour_id()).child("Cost").updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
+                                                    dbSpam.child(costModel.getUid()).child(costModel.getTour_id())
+                                                            .child("Cost").child(costModel.getId())
+                                                            .updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
                                                         @Override
                                                         public void onComplete(@NonNull Task task) {
                                                             if (task.isSuccessful()){
@@ -529,11 +635,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                                                     hashMap.put("tour_name", tourModel.getTour_name());
                                                     hashMap.put("uid", tourModel.getUid());
 
-                                                    dbSpam.child(tourModel.getUid()).child(tourModel.getId()).child("Tour").updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
+                                                    dbSpam.child(tourModel.getUid()).child(tourModel.getId())
+                                                            .child("Tour").child(tourModel.getId())
+                                                            .updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
                                                         @Override
                                                         public void onComplete(@NonNull Task task) {
                                                             if (task.isSuccessful()){
-                                                                showToast("Success");
+                                                                //showToast("Success");
                                                             }
                                                             else {
                                                                 showToast(task.getException().toString());
@@ -552,47 +660,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                             }
                         });
-
-                        dbMember.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-                                    MemberModel memberModel = dataSnapshot.getValue(MemberModel.class);
-                                    if (memberModel.getTour_id().equals(tour_id)){
-                                        dbMember.child(memberModel.getId()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()){
-                                                    HashMap hashMap = new HashMap();
-                                                    hashMap.put("added_by_uid", memberModel.getAdded_by_uid());
-                                                    hashMap.put("amount", memberModel.getAmount());
-                                                    hashMap.put("date", memberModel.getDate());
-                                                    hashMap.put("email", memberModel.getEmail());
-                                                    hashMap.put("id", memberModel.getId());
-                                                    hashMap.put("name", memberModel.getName());
-                                                    hashMap.put("number", memberModel.getNumber());
-                                                    hashMap.put("per_person_cost", memberModel.getPer_person_cost());
-                                                    hashMap.put("tour_id", memberModel.getTour_id());
-                                                    hashMap.put("tour_name", memberModel.getTour_name());
-
-
-
-                                                }
-                                                else {
-                                                    showToast(task.getException().toString());
-                                                }
-                                            }
-                                        });
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
-                            }
-                        });
-
 
                     }
                 })
@@ -917,11 +984,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                                     }
                                 });
 
-
-
-                            }
-                            else {
-                                showToast(task.getException().toString());
                             }
                         }
                     });
